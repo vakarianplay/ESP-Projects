@@ -19,13 +19,19 @@ public:
     void wifiStart(String ssidName);
     bool isWifiStart();
 
+    void setModbusObj(ModbusSlave amodbus);
+
 private:
+    ModbusSlave _modbus;
     bool wifiFlag = false;
+    void handleRoot();
 };
 
 WifiModule::WifiModule() {
     Serial.println("Create wifi object");
 }
+
+
 
 void WifiModule::wifiStart(String ssidName) {
     WiFi.softAPConfig(local_ip, gateway, subnet); //Create AP mode
@@ -35,10 +41,19 @@ void WifiModule::wifiStart(String ssidName) {
         Serial.println("Init AP: " + ssidName + "\nIP: "+ local_ip.toString());
         httpUpdater.setup(&server, "/firmware");
         server.begin();
+        server.on("/", [this](){this->handleRoot();});
         wifiFlag = true;
     }
 }
 
 bool WifiModule::isWifiStart() {
     return wifiFlag;
+}
+
+void WifiModule::setModbusObj(ModbusSlave amodbus) {
+    _modbus = amodbus;
+}
+
+void WifiModule::handleRoot() {
+    server.send(200, "text/plane", String(_modbus.getCpuFrequency()));
 }
