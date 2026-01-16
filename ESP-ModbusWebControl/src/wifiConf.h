@@ -55,5 +55,6 @@ void WifiModule::setModbusObj(ModbusSlave amodbus) {
 }
 
 void WifiModule::handleRoot() {
-    server.send(200, "text/plane", String(_modbus.getCpuFrequency()));
+    // server.send(200, "text/plane", String(_modbus.getCpuFrequency()));
+    server.send(200, "application/json", _modbus.getDebugInfoJson());
 }
