@@ -6,14 +6,12 @@
 
 // Карта регистров Modbus
 enum class ModbusRegister : uint16_t {
-    MILLIS_LOW   = 0,   // millis() - младшие 16 бит [READ]
-    MILLIS_HIGH  = 1,   // millis() - старшие 16 бит [READ]
-    TEMPERATURE  = 2,   // Температура чипа × 10 [READ]
-    CPU_FREQ     = 3,   // Частота CPU в МГц [READ]
-    USER_VALUE   = 5,   // Пользовательское значение [READ/WRITE]
-
-    // Служебные константы
-    COUNT        = 6    // Общее количество регистров
+    MILLIS_LOW   = 0,
+    MILLIS_HIGH  = 1,
+    TEMPERATURE  = 2,
+    CPU_FREQ     = 3,
+    USER_VALUE   = 5,
+    COUNT        = 6
 };
 
 // Конфигурация Modbus Slave
@@ -28,12 +26,11 @@ struct ModbusConfig {
 class ModbusSlave {
 public:
     ModbusSlave();
-    ~ModbusSlave() = default;
+    ~ModbusSlave();
 
     void begin(const ModbusConfig& config);
     void begin(uint8_t slaveId, uint32_t baudRate, int8_t rxPin, int8_t txPin, int8_t deRePin);
 
-    // Основной цикл обработки
     void update();
 
     uint16_t getRegister(ModbusRegister reg);
@@ -45,7 +42,6 @@ public:
     void setUserValue(uint16_t value);
     bool isUserValueUpdated();
 
-
     void printDebugInfo(Stream& serial);
     String getDebugInfoJson();
 
@@ -54,15 +50,19 @@ private:
     HardwareSerial _serial;
     ModbusConfig _config;
 
-    uint16_t _userValue;
-    bool _userValueUpdated;
+    volatile uint16_t _userValue;      // volatile для callback
+    volatile bool _userValueUpdated;   // volatile для callback
+
+    bool _initialized;
 
     void setupRegisters();
     float readInternalTemperature();
 
+    // Статический указатель на экземпляр
     static ModbusSlave* _instance;
+
     static uint16_t onPreRead(TRegister* reg, uint16_t val);
     static uint16_t onUserValueWrite(TRegister* reg, uint16_t val);
 };
 
-#endif // MODBUS_SLAVE_H
+#endif

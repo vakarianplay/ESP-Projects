@@ -1,17 +1,30 @@
 #include "ModbusSlave.h"
 
+// Инициализация статического указателя
 ModbusSlave* ModbusSlave::_instance = nullptr;
 
 ModbusSlave::ModbusSlave() 
     : _serial(2)
     , _userValue(0)
-    , _userValueUpdated(false) 
+    , _userValueUpdated(false)
+    , _initialized(false)
 {
-    _instance = this;
+
+}
+
+ModbusSlave::~ModbusSlave() {
+    if (_instance == this) {
+        _instance = nullptr;
+    }
 }
 
 void ModbusSlave::begin(const ModbusConfig& config) {
     _config = config;
+
+    // Устанавливаем _instance ЗДЕСЬ, после полной инициализации
+    _instance = this;
+
+    Serial.printf("[ModbusSlave] Setting _instance = %p\n", (void*)this);
 
     // Инициализация UART для RS485
     _serial.begin(_config.baudRate, SERIAL_8N1, _config.rxPin, _config.txPin);
@@ -22,6 +35,10 @@ void ModbusSlave::begin(const ModbusConfig& config) {
 
     // Настройка регистров
     setupRegisters();
+
+    _initialized = true;
+
+    Serial.println("[ModbusSlave] Initialization complete");
 }
 
 void ModbusSlave::begin(uint8_t slaveId, uint32_t baudRate, int8_t rxPin, int8_t txPin, int8_t deRePin) {
@@ -36,24 +53,24 @@ void ModbusSlave::begin(uint8_t slaveId, uint32_t baudRate, int8_t rxPin, int8_t
 }
 
 void ModbusSlave::setupRegisters() {
-    // Добавление Holding Registers
     _mb.addHreg(static_cast<uint16_t>(ModbusRegister::MILLIS_LOW), 0);
     _mb.addHreg(static_cast<uint16_t>(ModbusRegister::MILLIS_HIGH), 0);
     _mb.addHreg(static_cast<uint16_t>(ModbusRegister::TEMPERATURE), 0);
     _mb.addHreg(static_cast<uint16_t>(ModbusRegister::CPU_FREQ), 0);
     _mb.addHreg(static_cast<uint16_t>(ModbusRegister::USER_VALUE), 0);
 
-    // Callbacks для чтения динамических регистров
     _mb.onGetHreg(static_cast<uint16_t>(ModbusRegister::MILLIS_LOW), onPreRead);
     _mb.onGetHreg(static_cast<uint16_t>(ModbusRegister::MILLIS_HIGH), onPreRead);
     _mb.onGetHreg(static_cast<uint16_t>(ModbusRegister::TEMPERATURE), onPreRead);
     _mb.onGetHreg(static_cast<uint16_t>(ModbusRegister::CPU_FREQ), onPreRead);
 
-    // Callback для записи user value
     _mb.onSetHreg(static_cast<uint16_t>(ModbusRegister::USER_VALUE), onUserValueWrite);
+
+    Serial.println("[ModbusSlave] Registers configured");
 }
 
 void ModbusSlave::update() {
+    if (!_initialized) return;
     _mb.task();
     yield();
 }
@@ -100,22 +117,23 @@ bool ModbusSlave::isUserValueUpdated() {
 
 void ModbusSlave::printDebugInfo(Stream& serial) {
     serial.println("\n--- Modbus Slave Status ---");
+    serial.printf("Instance address: %p\n", (void*)this);
+    serial.printf("Static _instance: %p\n", (void*)_instance);
     serial.printf("Slave ID: %d\n", _config.slaveId);
     serial.printf("Baud Rate: %lu\n", _config.baudRate);
     serial.println("\n--- Register Values ---");
     serial.printf("Millis: %lu\n", millis());
     serial.printf("Temperature: %.1f C\n", getTemperature());
-    serial.printf("Analog pin: %u MHz\n", getCpuFrequency());
-    serial.printf("User Value: %u\n", _userValue);
+    serial.printf("AnalogValue: %u MHz\n", getCpuFrequency());
+    serial.printf("User Value (member): %u\n", _userValue);
+    serial.printf("User Value (register): %u\n", _mb.Hreg(static_cast<uint16_t>(ModbusRegister::USER_VALUE)));
 }
 
-String ModbusSlave::getDebugInfoJson()
-{
+String ModbusSlave::getDebugInfoJson() {
     String json;
-    json.reserve(256); 
+    json.reserve(256);
 
     json += "{";
-
     json += "\"config\":{";
     json += "\"slaveId\":" + String(_config.slaveId) + ",";
     json += "\"baudRate\":" + String(_config.baudRate) + ",";
@@ -123,22 +141,20 @@ String ModbusSlave::getDebugInfoJson()
     json += "\"txPin\":" + String(_config.txPin) + ",";
     json += "\"deRePin\":" + String(_config.deRePin);
     json += "},";
-
     json += "\"registers\":{";
     json += "\"millis\":" + String(millis()) + ",";
     json += "\"temperature\":" + String(getTemperature(), 1) + ",";
-    json += "\"cpuFrequency\":" + String(getCpuFrequency()) + ",";
-    json += "\"userValue\":" + String(_userValue);
+    json += "\"analogValue\":" + String(getCpuFrequency()) + ",";
+    json += "\"userValue\":" + String(_mb.Hreg(static_cast<uint16_t>(ModbusRegister::USER_VALUE)));
     json += "}";
-
     json += "}";
 
     return json;
 }
 
-// Статический callback для чтения регистров
 uint16_t ModbusSlave::onPreRead(TRegister* reg, uint16_t val) {
     if (_instance == nullptr) {
+        Serial.println("[ERROR] _instance is nullptr in onPreRead!");
         return val;
     }
 
@@ -164,7 +180,8 @@ uint16_t ModbusSlave::onPreRead(TRegister* reg, uint16_t val) {
         }
 
         case ModbusRegister::CPU_FREQ: {
-            return static_cast<uint16_t>(analogRead(36));
+            // return static_cast<uint16_t>(getCpuFrequencyMhz());
+            return analogRead(36);
         }
 
         default:
@@ -172,7 +189,6 @@ uint16_t ModbusSlave::onPreRead(TRegister* reg, uint16_t val) {
     }
 }
 
-// Статический callback для записи user value
 uint16_t ModbusSlave::onUserValueWrite(TRegister* reg, uint16_t val) {
     if (_instance != nullptr) {
         _instance->_userValue = val;
