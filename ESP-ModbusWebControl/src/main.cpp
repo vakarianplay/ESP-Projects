@@ -14,6 +14,7 @@ void setup() {
     Serial.println("========================================");
 
     pinMode(36, INPUT);
+    pinMode(2, OUTPUT);
     analogReadResolution(16);
 
     // Конфигурация Modbus
@@ -51,6 +52,7 @@ void loop() {
 
     if (modbus->isUserValueUpdated()) {
         Serial.printf("[EVENT] User Value written: %u\n", modbus->getUserValue());
+        analogWrite(2, modbus->getUserValue());
     }
 
     if (millis() - lastDebugTime >= DEBUG_INTERVAL) {
