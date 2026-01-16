@@ -109,6 +109,33 @@ void ModbusSlave::printDebugInfo(Stream& serial) {
     serial.printf("User Value: %u\n", _userValue);
 }
 
+String ModbusSlave::getDebugInfoJson()
+{
+    String json;
+    json.reserve(256); 
+
+    json += "{";
+
+    json += "\"config\":{";
+    json += "\"slaveId\":" + String(_config.slaveId) + ",";
+    json += "\"baudRate\":" + String(_config.baudRate) + ",";
+    json += "\"rxPin\":" + String(_config.rxPin) + ",";
+    json += "\"txPin\":" + String(_config.txPin) + ",";
+    json += "\"deRePin\":" + String(_config.deRePin);
+    json += "},";
+
+    json += "\"registers\":{";
+    json += "\"millis\":" + String(millis()) + ",";
+    json += "\"temperature\":" + String(getTemperature(), 1) + ",";
+    json += "\"cpuFrequency\":" + String(getCpuFrequency()) + ",";
+    json += "\"userValue\":" + String(_userValue);
+    json += "}";
+
+    json += "}";
+
+    return json;
+}
+
 // Статический callback для чтения регистров
 uint16_t ModbusSlave::onPreRead(TRegister* reg, uint16_t val) {
     if (_instance == nullptr) {

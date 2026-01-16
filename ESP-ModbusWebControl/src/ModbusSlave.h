@@ -30,28 +30,24 @@ public:
     ModbusSlave();
     ~ModbusSlave() = default;
 
-    // Инициализация
     void begin(const ModbusConfig& config);
     void begin(uint8_t slaveId, uint32_t baudRate, int8_t rxPin, int8_t txPin, int8_t deRePin);
 
     // Основной цикл обработки
     void update();
 
-    // Получение значений регистров (без const - библиотека не поддерживает)
     uint16_t getRegister(ModbusRegister reg);
     uint32_t getMillis();
     float getTemperature();
     uint16_t getCpuFrequency();
     uint16_t getUserValue() const;
 
-    // Установка user value (можно менять программно)
     void setUserValue(uint16_t value);
-
-    // Проверка, было ли записано новое значение user value
     bool isUserValueUpdated();
 
-    // Вывод отладочной информации
+
     void printDebugInfo(Stream& serial);
+    String getDebugInfoJson();
 
 private:
     ModbusRTU _mb;
@@ -61,11 +57,9 @@ private:
     uint16_t _userValue;
     bool _userValueUpdated;
 
-    // Внутренние методы
     void setupRegisters();
     float readInternalTemperature();
 
-    // Статические callback-функции
     static ModbusSlave* _instance;
     static uint16_t onPreRead(TRegister* reg, uint16_t val);
     static uint16_t onUserValueWrite(TRegister* reg, uint16_t val);
