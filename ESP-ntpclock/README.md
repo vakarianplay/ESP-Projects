@@ -38,6 +38,12 @@
 
 -----------------------------
 
+## Web interface for configure device
+
+
+<img width="600" height="480" alt="Снимок экрана_20260224_112428" src="https://github.com/user-attachments/assets/7054867b-c109-4d7d-8bde-fbbdb1074b4d" />
+
+
 
 
 
