@@ -111,3 +111,33 @@ String NtpWeatherService::buildScrollText() const {
     s += " C   ";
     return s;
 }
+
+String NtpWeatherService::getTimeStr() const {
+    tm tmNow;
+    time_t t = ntp.getUnix() + config.tzOffsetSec;
+    localtime_r(&t, &tmNow);
+
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%02d:%02d:%02d",
+             tmNow.tm_hour, tmNow.tm_min, tmNow.tm_sec);
+    return String(buf);
+}
+
+String NtpWeatherService::getDateStr() const {
+    tm tmNow;
+    time_t t = ntp.getUnix() + config.tzOffsetSec;
+    localtime_r(&t, &tmNow);
+
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%02d.%02d.%04d",
+             tmNow.tm_mday, tmNow.tm_mon + 1, tmNow.tm_year + 1900);
+    return String(buf);
+}
+
+String NtpWeatherService::getWeatherStr() const {
+    String s = weatherDesc;
+    s += " ";
+    s += String(weatherTemp, 1);
+    s += " C";
+    return s;
+}
