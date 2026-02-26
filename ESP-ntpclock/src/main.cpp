@@ -14,8 +14,9 @@
 LiquidCrystal_I2C lcd(LCD_ADDR, LCD_COLS, LCD_ROWS);
 
 WiFiManager wifiManager;
-WebConfigServer webServer;
+// WebConfigServer webServer;
 NtpWeatherService ntpWeather;
+WebConfigServer webServer(&ntpWeather);
 
 String scrollText;
 uint16_t scrollPos = 0;

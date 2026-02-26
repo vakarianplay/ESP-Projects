@@ -7,15 +7,19 @@
 #include <functional>
 #include "AppConfig.h"
 
+// Forward declaration, чтобы не тянуть весь заголовок
+class NtpWeatherService;
+
 class WebConfigServer {
 public:
-    WebConfigServer();
+    explicit WebConfigServer(NtpWeatherService* svc = nullptr);
 
     void begin();
     void handleClient();
     const AppConfig& getConfig() const;
 
     void setOnSave(std::function<void(const AppConfig&)> cb);
+    void setService(NtpWeatherService* svc) { service = svc; }
 
 private:
     void loadConfig();
@@ -24,6 +28,7 @@ private:
 
     void handleRoot();
     void handleSave();
+    void handleState();   // AJAX JSON
 
     WebServer httpServer;
     HTTPUpdateServer httpUpdater;
@@ -31,4 +36,6 @@ private:
 
     AppConfig config;
     std::function<void(const AppConfig&)> onSave;
+
+    NtpWeatherService* service = nullptr;
 };
