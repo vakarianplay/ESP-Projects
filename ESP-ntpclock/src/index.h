@@ -64,21 +64,21 @@ const char webpage[] PROGMEM = R"=====(
 <body>
     <h1>ESP NTP Clock Settings</h1>
     <form method="POST" action="/save">
-        <label for="ntp">NTP сервер</label>
+        <label for="ntp">NTP server</label>
         <input type="text" id="ntp" name="ntp" value="{{NTP}}">
 
-        <label for="city">Город</label>
+        <label for="city">City</label>
         <input type="text" id="city" name="city" value="{{CITY}}">
 
-        <label for="key">OpenWeatherMap API ключ</label>
+        <label for="key">OpenWeatherMap API key</label>
         <input type="text" id="key" name="key" value="{{KEY}}">
 
-        <label for="tz">Смещение TZ, сек</label>
+        <label for="tz">Offset TZ, s</label>
         <input type="number" id="tz" name="tz" value="{{TZ}}">
 
-        <button type="submit">💾 Сохранить</button>
+        <button type="submit">💾 Save</button>
     </form>
-    <div class="note">OTA обновление: /firmware</div>
+    <div class="note">OTA update: /firmware</div>
 </body>
 </html>
 )=====";
