@@ -64,21 +64,43 @@ const char webpage[] PROGMEM = R"=====(
 <body>
     <h1>ESP NTP Clock Settings</h1>
     <form method="POST" action="/save">
-        <label for="ntp">NTP server</label>
+        <label for="ntp">NTP сервер</label>
         <input type="text" id="ntp" name="ntp" value="{{NTP}}">
 
-        <label for="city">City</label>
+        <label for="city">Город</label>
         <input type="text" id="city" name="city" value="{{CITY}}">
 
-        <label for="key">OpenWeatherMap API key</label>
+        <label for="key">OpenWeatherMap API ключ</label>
         <input type="text" id="key" name="key" value="{{KEY}}">
 
-        <label for="tz">Offset TZ, s</label>
+        <label for="tz">Смещение TZ, сек</label>
         <input type="number" id="tz" name="tz" value="{{TZ}}">
 
-        <button type="submit">💾 Save</button>
+        <button type="submit">💾 Сохранить</button>
     </form>
-    <div class="note">OTA update: /firmware</div>
+    <div class="note">OTA обновление: /firmware</div>
+
+    <div style="max-width: 420px; margin: 20px auto; padding: 15px; background: #fff;
+        border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <div><b>Время:</b> <span id="time">--:--:--</span></div>
+        <div><b>Дата:</b> <span id="date">--.--.----</span></div>
+        <div><b>Погода:</b> <span id="weather">...</span></div>
+    </div>
+
+    <script>
+    async function updateState() {
+        try {
+            const r = await fetch("/state");
+            if (!r.ok) return;
+            const d = await r.json();
+            document.getElementById("time").textContent = d.time;
+            document.getElementById("date").textContent = d.date;
+            document.getElementById("weather").textContent = d.weather;
+        } catch (e) {}
+    }
+    updateState();
+    setInterval(updateState, 1000);
+    </script>
 </body>
 </html>
 )=====";
