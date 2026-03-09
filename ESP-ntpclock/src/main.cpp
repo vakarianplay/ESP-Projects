@@ -78,7 +78,7 @@ void setup() {
     lcd.setCursor(0, 0);
     lcd.print("Connecting...");
 
-    wifiManager.autoConnect("ESP Connect");
+    wifiManager.autoConnect("Sonoff Connect");
 
     webServer.begin();
     webServer.setOnSave(applyConfig);
@@ -103,5 +103,4 @@ void loop() {
         drawScroll();
         scrollPos = (scrollPos + 1) % max<uint16_t>(1, scrollText.length());
     }
-
 }
