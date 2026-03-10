@@ -64,27 +64,27 @@ const char webpage[] PROGMEM = R"=====(
 <body>
     <h1>ESP NTP Clock Settings</h1>
     <form method="POST" action="/save">
-        <label for="ntp">NTP сервер</label>
+        <label for="ntp">NTP server</label>
         <input type="text" id="ntp" name="ntp" value="{{NTP}}">
 
-        <label for="city">Город</label>
+        <label for="city">City</label>
         <input type="text" id="city" name="city" value="{{CITY}}">
 
-        <label for="key">OpenWeatherMap API ключ</label>
+        <label for="key">OpenWeatherMap API key</label>
         <input type="text" id="key" name="key" value="{{KEY}}">
 
-        <label for="tz">Смещение TZ, сек</label>
+        <label for="tz">Offset TZ, sec</label>
         <input type="number" id="tz" name="tz" value="{{TZ}}">
 
-        <button type="submit">💾 Сохранить</button>
+        <button type="submit">💾 Save</button>
     </form>
-    <div class="note">OTA обновление: /firmware</div>
+    <div class="note">OTA update: /firmware</div>
 
     <div style="max-width: 420px; margin: 20px auto; padding: 15px; background: #fff;
         border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <div><b>Время:</b> <span id="time">--:--:--</span></div>
-        <div><b>Дата:</b> <span id="date">--.--.----</span></div>
-        <div><b>Погода:</b> <span id="weather">...</span></div>
+        <div><b>Time:</b> <span id="time">--:--:--</span></div>
+        <div><b>Date:</b> <span id="date">--.--.----</span></div>
+        <div><b>Weather:</b> <span id="weather">...</span></div>
     </div>
 
     <script>
@@ -103,4 +103,5 @@ const char webpage[] PROGMEM = R"=====(
     </script>
 </body>
 </html>
+
 )=====";
