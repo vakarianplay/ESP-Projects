@@ -43,6 +43,9 @@
 
 <img width="600" height="480" alt="Снимок экрана_20260224_112428" src="https://github.com/user-attachments/assets/7054867b-c109-4d7d-8bde-fbbdb1074b4d" />
 
+<img width="650" height="587" alt="Снимок экрана от 2026-03-08 16-39-38" src="https://github.com/user-attachments/assets/d4b17d62-2684-48d7-b029-6d139afc7135" />
+
+
 
 
 
