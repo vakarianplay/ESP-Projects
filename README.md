@@ -15,18 +15,6 @@ Project of controller for RGP led strip for drumkit with web interface and cURL 
 
 ***
 
-# Led breathing interface
-
-![alt text](https://img.shields.io/badge/Status-complete-darkgreen?style=for-the-badge&logo=Buddy)
-
-Async webinterface for control breathing RGB led modes
-
-**https://github.com/vakarianplay/ESP-Projects/tree/main/ESP-Led-breathing**
-
-![alt text](https://github.com/vakarianplay/readmepic/blob/main/breath.jpg)
-
-***
-
 
 # Sonoff cURL switch
 
@@ -35,6 +23,20 @@ Async webinterface for control breathing RGB led modes
 Light-weight firmware for Sonoff Basic relay with http GET requests
 
 **https://github.com/vakarianplay/ESP-Projects/tree/main/sonoff**
+
+***
+
+
+
+# ESP NTP Clock
+
+![alt text](https://img.shields.io/badge/Status-complete-darkgreen?style=for-the-badge&logo=Buddy)
+
+ESP32 based clock with NTP sync and weather info
+
+**[https://github.com/vakarianplay/ESP-Projects/tree/main/sonoff](https://github.com/vakarianplay/ESP-Projects/tree/main/ESP-ntpclock)**
+
+<img src="https://github.com/user-attachments/assets/8813accc-29c2-4214-8daf-190f17cdf3bb"/>
 
 ***
 
