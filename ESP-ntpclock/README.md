@@ -28,6 +28,15 @@
 >* Web interface
 >* OTA update
 
+## 🚀 How to start
+
+>* [Download .bin firmware](https://github.com/vakarianplay/ESP-Projects/raw/refs/heads/main/ESP-ntpclock/firmware_esp32.bin) or build in platform io
+>* Flash your esp32 by esptool `esptool --port (your port) --baud 460800 write_flash --flash_mode dio 0x0 firmware_esp32.bin`
+>* Connect LCD display: GPIO21 - SDA, GPIO22 - SLC
+>* Set up your wi-fi network. Connect to AP "ESP Connect" and enter your credentials
+
+-----------------------------------
+
 <img src="https://github.com/user-attachments/assets/8813accc-29c2-4214-8daf-190f17cdf3bb" width="400" />
 
 <img src="https://github.com/user-attachments/assets/39950700-855b-45a6-a059-6a8edf148f87" width="400" />
