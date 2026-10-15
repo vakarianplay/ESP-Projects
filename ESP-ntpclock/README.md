@@ -26,7 +26,7 @@
 >* Weather info from OpenWeatherMap (need API key)
 >* Configure timezone
 >* Web interface
->* OTA update
+>* OTA update (`Available http://[esp_ip]/firmware`)
 
 ## 🚀 How to start
 
