@@ -140,7 +140,23 @@ static bool initCamera() {
     config.xclk_freq_hz = 20000000;
     config.pixel_format = PIXFORMAT_JPEG;
 
+// #ifdef DEBUG_FORCE_QVGA
+//     config.frame_size = FRAMESIZE_QVGA;
+// #else
+//     config.frame_size = psramFound() ? FRAMESIZE_VGA : FRAMESIZE_QVGA;
+// #endif
+
+// #ifdef DEBUG_JPEG_QUALITY
+//     config.jpeg_quality = DEBUG_JPEG_QUALITY;
+// #else
+//     config.jpeg_quality = psramFound() ? 12 : 15;
+// #endif
+
+//     config.fb_count = psramFound() ? 2 : 1;
+
 #ifdef DEBUG_FORCE_QVGA
+    config.frame_size = FRAMESIZE_QVGA;
+#elif defined(RELEASE_FORCE_QVGA)
     config.frame_size = FRAMESIZE_QVGA;
 #else
     config.frame_size = psramFound() ? FRAMESIZE_VGA : FRAMESIZE_QVGA;
@@ -148,11 +164,21 @@ static bool initCamera() {
 
 #ifdef DEBUG_JPEG_QUALITY
     config.jpeg_quality = DEBUG_JPEG_QUALITY;
+#elif defined(RELEASE_JPEG_QUALITY)
+    config.jpeg_quality = RELEASE_JPEG_QUALITY;
 #else
     config.jpeg_quality = psramFound() ? 12 : 15;
 #endif
 
+#ifdef CAM_FB_COUNT
+    config.fb_count = CAM_FB_COUNT;
+#else
     config.fb_count = psramFound() ? 2 : 1;
+#endif
+
+#if defined(CAMERA_GRAB_LATEST)
+    config.grab_mode = CAMERA_GRAB_LATEST;
+#endif
 
     if (esp_camera_init(&config) != ESP_OK) {
         return false;
@@ -247,28 +273,30 @@ static bool sendFrameChunks(const uint8_t *jpg, size_t jpgLen) {
 }
 
 static void captureAndSend() {
-    DBG_PRINTF("CAM%d capture start\n", CAM_ID);
-
     if (PRELIGHT_MS > 0) {
         digitalWrite(FLASH_LED_PIN, HIGH);
         delay(PRELIGHT_MS);
     }
 
-    camera_fb_t *fb = esp_camera_fb_get();
+#ifdef FORCE_FRESH_FRAME
+    camera_fb_t *stale = esp_camera_fb_get();
+    if (stale) {
+        esp_camera_fb_return(stale);
+    }
+    delay(30);
+#endif
 
+    camera_fb_t *fb = esp_camera_fb_get();
     digitalWrite(FLASH_LED_PIN, LOW);
 
     if (!fb) {
-        DBG_PRINTF("CAM%d ERROR: fb == nullptr\n", CAM_ID);
         return;
     }
 
-    DBG_PRINTF("CAM%d jpeg size=%u\n", CAM_ID, (unsigned)fb->len);
-    const bool ok = sendFrameChunks(fb->buf, fb->len);
-    DBG_PRINTF("CAM%d send result=%s\n", CAM_ID, ok ? "OK" : "FAIL");
-
+    sendFrameChunks(fb->buf, fb->len);
     esp_camera_fb_return(fb);
 }
+
 
 void setup() {
     DBG_INIT();
