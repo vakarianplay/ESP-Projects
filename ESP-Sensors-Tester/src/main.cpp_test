@@ -1,0 +1,52 @@
+#include <Arduino.h>
+#include <WiFi.h>
+
+void setup() {
+    Serial.begin(115200);
+
+    // Не используем while (!Serial), чтобы плата запускалась
+    // даже без подключённого монитора порта.
+    delay(2000);
+
+    Serial.println();
+    Serial.println("================================");
+    Serial.println("ESP32-C3 MINIMAL WIFI TEST");
+    Serial.println("APPLICATION STARTED");
+    Serial.println("================================");
+
+    WiFi.persistent(false);
+    WiFi.mode(WIFI_AP);
+    WiFi.setSleep(false);
+
+    const IPAddress ip(192, 168, 4, 1);
+    const IPAddress gateway(192, 168, 4, 1);
+    const IPAddress subnet(255, 255, 255, 0);
+
+    const bool configResult =
+        WiFi.softAPConfig(ip, gateway, subnet);
+
+    // Простейший вариант открытой точки доступа
+    const bool apResult = WiFi.softAP("ESP32-C3-TEST");
+
+    delay(1000);
+
+    Serial.printf("softAPConfig: %s\n", configResult ? "OK" : "FAIL");
+    Serial.printf("softAP: %s\n", apResult ? "OK" : "FAIL");
+
+    Serial.print("AP IP: ");
+    Serial.println(WiFi.softAPIP());
+
+    Serial.print("AP MAC: ");
+    Serial.println(WiFi.softAPmacAddress());
+}
+
+void loop() {
+    Serial.printf(
+        "ALIVE, uptime=%lu s, AP IP=%s, clients=%u\n",
+        static_cast<unsigned long>(millis() / 1000),
+        WiFi.softAPIP().toString().c_str(),
+        WiFi.softAPgetStationNum()
+    );
+
+    delay(2000);
+}
