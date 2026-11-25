@@ -5,7 +5,6 @@
 
 static constexpr uint8_t PROTO_MAGIC = 0xEC;
 static constexpr uint8_t PROTO_VERSION = 1;
-
 static constexpr size_t ESPNOW_MAX_PAYLOAD = 250;
 static constexpr size_t CHUNK_DATA_SIZE = 200;
 
