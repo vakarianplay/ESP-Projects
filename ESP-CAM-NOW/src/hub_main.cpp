@@ -22,7 +22,6 @@
 static void debugSerialInit() {
     Serial.begin(115200);
 
-    // Для ESP32-C3 USB CDC: подождать порт, чтобы не потерять первые логи
 #if defined(ARDUINO_USB_CDC_ON_BOOT)
     const uint32_t t0 = millis();
     while (!Serial && (millis() - t0 < 4000)) {
